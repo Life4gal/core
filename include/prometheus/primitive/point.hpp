@@ -1,0 +1,405 @@
+// This file is part of prometheus
+// Copyright (C) 2022-2025 Life4gal <life4gal@gmail.com>
+// This file is subject to the license terms in the LICENSE file
+// found in the top-level directory of this distribution.
+
+#pragma once
+
+#include <algorithm>
+#include <type_traits>
+#include <format>
+
+#include <prometheus/macro.hpp>
+
+#include <prometheus/meta/dimension.hpp>
+#include <prometheus/math/cmath.hpp>
+
+namespace prometheus
+{
+	namespace primitive
+	{
+		template<std::size_t, typename>
+		struct basic_point;
+
+		template<typename T>
+			requires(std::is_arithmetic_v<T>)
+		struct [[nodiscard]] PROMETHEUS_COMPILER_EMPTY_BASE basic_point<2, T> final : meta::dimension<basic_point<2, T>>
+		{
+			using value_type = T;
+
+			value_type x;
+			value_type y;
+
+			// warning: missing initializer for member ‘prometheus::primitive::basic_point<2, float>::<anonymous>’ [-Wmissing-field-initializers]
+			// {.x = x, .y = y};
+			//                     ^
+			// No initialization value specified for base class `meta::dimension`
+			constexpr basic_point() noexcept
+				: x{},
+				  y{} {}
+
+			constexpr basic_point(const value_type x, const value_type y) noexcept
+				: x{x},
+				  y{y} {}
+
+			constexpr explicit basic_point(const value_type value) noexcept
+				: x{value},
+				  y{value} {}
+
+			template<std::size_t Index>
+				requires(Index < 2)
+			[[nodiscard]] constexpr auto get() const noexcept -> const value_type&
+			{
+				if constexpr (Index == 0)
+				{
+					return x;
+				}
+				else if constexpr (Index == 1)
+				{
+					return y;
+				}
+				else
+				{
+					PROMETHEUS_SEMANTIC_STATIC_UNREACHABLE();
+				}
+			}
+
+			template<std::size_t Index>
+				requires(Index < 2)
+			[[nodiscard]] constexpr auto get() noexcept -> value_type&
+			{
+				if constexpr (Index == 0)
+				{
+					return x;
+				}
+				else if constexpr (Index == 1)
+				{
+					return y;
+				}
+				else
+				{
+					PROMETHEUS_SEMANTIC_STATIC_UNREACHABLE();
+				}
+			}
+
+			[[nodiscard]] constexpr explicit operator basic_point<3, value_type>() const noexcept
+			{
+				return {.x = x, .y = y, .z = value_type{0}};
+			}
+
+			template<std::convertible_to<value_type> U = value_type>
+			[[nodiscard]] constexpr auto distance(const basic_point<2, U>& other) const noexcept -> value_type //
+			{
+				return math::hypot(x - static_cast<value_type>(other.x), y - static_cast<value_type>(other.y));
+			}
+
+			template<std::convertible_to<value_type> U = value_type>
+			[[nodiscard]] constexpr auto combine_max(const basic_point<2, U>& other) const noexcept -> basic_point
+			{
+				return
+				{
+						std::ranges::max(x, other.x),
+						std::ranges::max(y, other.y)
+				};
+			}
+
+			template<std::convertible_to<value_type> U = value_type>
+			[[nodiscard]] constexpr auto combine_min(const basic_point<2, U>& other) const noexcept -> basic_point
+			{
+				return
+				{
+						std::ranges::min(x, other.x),
+						std::ranges::min(y, other.y)
+				};
+			}
+
+			template<std::convertible_to<value_type> Low = value_type, std::convertible_to<value_type> High = value_type>
+			[[nodiscard]] constexpr auto clamp(
+				const basic_point<2, Low>& low,
+				const basic_point<2, High>& high
+			) const noexcept -> basic_point
+			{
+				// PROMETHEUS_PLATFORM_ASSUME(low.x < high.x);
+				// PROMETHEUS_PLATFORM_ASSUME(low.y < high.y);
+
+				return
+				{
+						std::ranges::clamp(x, low.x, high.x),
+						std::ranges::clamp(y, low.y, high.y)
+				};
+			}
+
+			template<std::size_t Index, std::convertible_to<value_type> T1 = value_type, std::convertible_to<value_type> T2 = value_type>
+				requires (Index < 2)
+			[[nodiscard]] constexpr auto between(
+				const basic_point<2, T1>& p1,
+				const basic_point<2, T2>& p2
+			) const noexcept -> bool
+			{
+				if constexpr (Index == 0)
+				{
+					// PROMETHEUS_PLATFORM_ASSUME(static_cast<value_type>(p1.x) < static_cast<value_type>(p2.x));
+
+					return x >= static_cast<value_type>(p1.x) and x < static_cast<value_type>(p2.x);
+				}
+				else if constexpr (Index == 1)
+				{
+					// PROMETHEUS_PLATFORM_ASSUME(static_cast<value_type>(p1.y) < static_cast<value_type>(p2.y));
+
+					return y >= static_cast<value_type>(p1.y) and y < static_cast<value_type>(p2.y);
+				}
+				else
+				{
+					PROMETHEUS_SEMANTIC_STATIC_UNREACHABLE();
+				}
+			}
+
+			template<std::convertible_to<value_type> T1 = value_type, std::convertible_to<value_type> T2 = value_type>
+			[[nodiscard]] constexpr auto between(
+				const basic_point<2, T1>& p1,
+				const basic_point<2, T2>& p2
+			) const noexcept -> bool
+			{
+				return
+						this->template between<0>(p1, p2) and
+						this->template between<1>(p1, p2);
+			}
+		};
+
+		template<typename T>
+			requires(std::is_arithmetic_v<T>)
+		struct [[nodiscard]] PROMETHEUS_COMPILER_EMPTY_BASE basic_point<3, T> final : meta::dimension<basic_point<3, T>>
+		{
+			using value_type = T;
+
+			value_type x;
+			value_type y;
+			value_type z;
+
+			// warning: missing initializer for member ‘prometheus::primitive::basic_point<3, float>::<anonymous>’ [-Wmissing-field-initializers]
+			// {.x = x, .y = y, .z = z};
+			//                               ^
+			// No initialization value specified for base class `meta::dimension`
+			constexpr basic_point() noexcept
+				: x{},
+				  y{},
+				  z{} {}
+
+			constexpr basic_point(const value_type x, const value_type y, const value_type z) noexcept
+				: x{x},
+				  y{y},
+				  z{z} {}
+
+			constexpr explicit basic_point(const value_type value) noexcept
+				: x{value},
+				  y{value},
+				  z{value} {}
+
+			template<std::size_t Index>
+				requires(Index < 3)
+			[[nodiscard]] constexpr auto get() const noexcept -> const value_type&
+			{
+				if constexpr (Index == 0)
+				{
+					return x;
+				}
+				else if constexpr (Index == 1)
+				{
+					return y;
+				}
+				else if constexpr (Index == 2)
+				{
+					return z;
+				}
+				else
+				{
+					PROMETHEUS_SEMANTIC_STATIC_UNREACHABLE();
+				}
+			}
+
+			template<std::size_t Index>
+				requires(Index < 3)
+			[[nodiscard]] constexpr auto get() noexcept -> value_type&
+			{
+				if constexpr (Index == 0)
+				{
+					return x;
+				}
+				else if constexpr (Index == 1)
+				{
+					return y;
+				}
+				else if constexpr (Index == 2)
+				{
+					return z;
+				}
+				else
+				{
+					PROMETHEUS_SEMANTIC_STATIC_UNREACHABLE();
+				}
+			}
+
+			[[nodiscard]] constexpr explicit operator basic_point<2, value_type>() const noexcept
+			{
+				return {.x = x, .y = y};
+			}
+
+			template<std::convertible_to<value_type> U = value_type>
+			[[nodiscard]] constexpr auto distance(const basic_point<3, U>& other) const noexcept -> value_type
+			{
+				return math::hypot(x - static_cast<value_type>(other.x), y - static_cast<value_type>(other.y), z - static_cast<value_type>(other.z));
+			}
+
+			template<std::convertible_to<value_type> U = value_type>
+			[[nodiscard]] constexpr auto combine_max(const basic_point<3, U>& other) const noexcept -> basic_point
+			{
+				return
+				{
+						std::ranges::max(x, other.x),
+						std::ranges::max(y, other.y),
+						std::ranges::max(z, other.z)
+				};
+			}
+
+			template<std::convertible_to<value_type> U = value_type>
+			[[nodiscard]] constexpr auto combine_min(const basic_point<3, U>& other) const noexcept -> basic_point
+			{
+				return
+				{
+						std::ranges::min(x, other.x),
+						std::ranges::min(y, other.y),
+						std::ranges::min(z, other.z)
+				};
+			}
+
+			template<std::convertible_to<value_type> Low = value_type, std::convertible_to<value_type> High = value_type>
+			[[nodiscard]] constexpr auto clamp(
+				const basic_point<3, Low>& low,
+				const basic_point<3, High>& high
+			) const noexcept -> basic_point
+			{
+				// PROMETHEUS_PLATFORM_ASSUME(low.x < high.x);
+				// PROMETHEUS_PLATFORM_ASSUME(low.y < high.y);
+				// PROMETHEUS_PLATFORM_ASSUME(low.z < high.z);
+
+				return
+				{
+						std::ranges::clamp(x, low.x, high.x),
+						std::ranges::clamp(y, low.y, high.y),
+						std::ranges::clamp(z, low.z, high.z)
+				};
+			}
+
+			template<std::size_t Index, std::convertible_to<value_type> T1 = value_type, std::convertible_to<value_type> T2 = value_type>
+				requires (Index < 3)
+			[[nodiscard]] constexpr auto between(
+				const basic_point<3, T1>& p1,
+				const basic_point<3, T2>& p2
+			) const noexcept -> bool
+			{
+				if constexpr (Index == 0)
+				{
+					// PROMETHEUS_PLATFORM_ASSUME(static_cast<value_type>(p1.x) < static_cast<value_type>(p2.x));
+
+					return x >= static_cast<value_type>(p1.x) and x < static_cast<value_type>(p2.x);
+				}
+				else if constexpr (Index == 1)
+				{
+					// PROMETHEUS_PLATFORM_ASSUME(static_cast<value_type>(p1.y) < static_cast<value_type>(p2.y));
+
+					return y >= static_cast<value_type>(p1.y) and y < static_cast<value_type>(p2.y);
+				}
+				else if constexpr (Index == 2)
+				{
+					// PROMETHEUS_PLATFORM_ASSUME(static_cast<value_type>(p1.z) < static_cast<value_type>(p2.z));
+
+					return z >= static_cast<value_type>(p1.z) and z < static_cast<value_type>(p2.z);
+				}
+				else
+				{
+					PROMETHEUS_SEMANTIC_STATIC_UNREACHABLE();
+				}
+			}
+
+			template<std::convertible_to<value_type> T1 = value_type, std::convertible_to<value_type> T2 = value_type>
+			[[nodiscard]] constexpr auto between(
+				const basic_point<3, T1>& p1,
+				const basic_point<3, T2>& p2
+			) const noexcept -> bool
+			{
+				return
+						this->template between<0>(p1, p2) and
+						this->template between<1>(p1, p2) and
+						this->template between<2>(p1, p2);
+			}
+		};
+
+		template<typename T>
+		using basic_point_2d = basic_point<2, T>;
+
+		template<typename T>
+		using basic_point_3d = basic_point<3, T>;
+	}
+
+	namespace meta
+	{
+		// This makes `point1 == point2` return a boolean instead of array<bool, N>
+		template<std::size_t N, typename T>
+		struct dimension_folder<primitive::basic_point<N, T>, DimensionFoldOperation::EQUAL>
+		{
+			constexpr static auto value = DimensionFoldCategory::ALL;
+		};
+
+		// This makes `point1 != point2` return a boolean instead of array<bool, N>
+		template<std::size_t N, typename T>
+		struct dimension_folder<primitive::basic_point<N, T>, DimensionFoldOperation::NOT_EQUAL>
+		{
+			constexpr static auto value = DimensionFoldCategory::ANY;
+		};
+	}
+}
+
+namespace std
+{
+	template<std::size_t Index, std::size_t N, typename T>
+	struct
+#ifdef PROMETHEUS_COMPILER_MSVC
+			[[msvc::known_semantics]]
+#endif
+			tuple_element<Index, prometheus::primitive::basic_point<N, T>> // NOLINT(cert-dcl58-cpp)
+	{
+		using type = T;
+	};
+
+	template<std::size_t N, typename T>
+	struct tuple_size<prometheus::primitive::basic_point<N, T>> // NOLINT(cert-dcl58-cpp)
+			: std::integral_constant<std::size_t, N> {};
+
+	template<std::size_t N, typename T>
+	struct formatter<prometheus::primitive::basic_point<N, T>> // NOLINT(cert-dcl58-cpp)
+	{
+		template<typename ParseContext>
+		constexpr auto parse(ParseContext& context) const noexcept -> auto
+		{
+			(void)this;
+			return context.begin();
+		}
+
+		template<typename FormatContext>
+		auto format(const prometheus::primitive::basic_point<N, T>& point, FormatContext& context) const noexcept -> auto
+		{
+			if constexpr (N == 2)
+			{
+				return std::format_to(context.out(), "({},{})", point.x, point.y);
+			}
+			else if constexpr (N == 3)
+			{
+				return std::format_to(context.out(), "({},{},{})", point.x, point.y, point.z);
+			}
+			else
+			{
+				PROMETHEUS_SEMANTIC_STATIC_UNREACHABLE();
+			}
+		}
+	};
+} // namespace std

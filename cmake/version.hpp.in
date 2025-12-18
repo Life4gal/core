@@ -1,0 +1,211 @@
+#pragma once
+
+// __cpp_lib_xxx
+#include <version>
+// std::unreachable()
+#include <utility>
+
+// =========================================================
+// VERSION
+// =========================================================
+
+#define PROMETHEUS_CORE_MAJOR_VERSION @PROMETHEUS_CORE_MAJOR_VERSION@
+#define PROMETHEUS_CORE_MINOR_VERSION @PROMETHEUS_CORE_MINOR_VERSION@
+#define PROMETHEUS_CORE_PATCH_VERSION @PROMETHEUS_CORE_PATCH_VERSION@
+#define PROMETHEUS_CORE_VERSION "@PROMETHEUS_CORE_VERSION@"
+
+#define PROMETHEUS_CORE_VERSION_STRING \
+    "@PROJECT_NAME@ v" PROMETHEUS_CORE_VERSION \
+    " (" PROMETHEUS_CORE_GIT_COMMIT_INFO_SHORT ")"
+
+// =========================================================
+// PLATFORM
+// =========================================================
+
+#define @PROMETHEUS_CORE_PLATFORM_NAME@
+
+#if defined(PROMETHEUS_CORE_PLATFORM_WINDOWS)
+#define PROMETHEUS_PLATFORM_WINDOWS
+#elif defined(PROMETHEUS_CORE_PLATFORM_LINUX)
+#define PROMETHEUS_PLATFORM_LINUX
+#elif defined(PROMETHEUS_CORE_PLATFORM_DARWIN)
+#define PROMETHEUS_PLATFORM_DARWIN
+#else
+#define PROMETHEUS_PLATFORM_UNKONWN
+#endif
+
+// =========================================================
+// ARCHITECTURE
+// =========================================================
+
+#define @PROMETHEUS_CORE_ARCH_NAME@
+
+#if defined(PROMETHEUS_CORE_ARCH_X64)
+#define PROMETHEUS_ARCH_X64
+#elif defined(PROMETHEUS_CORE_ARCH_X86)
+#define PROMETHEUS_ARCH_X86
+#elif defined(PROMETHEUS_CORE_ARCH_ARM64)
+#define PROMETHEUS_ARCH_ARM64
+#elif defined(PROMETHEUS_CORE_ARCH_ARM)
+#define PROMETHEUS_ARCH_ARM
+#else
+#define PROMETHEUS_PLATFORM_UNKONWN
+#endif
+
+// =========================================================
+// COMPILER
+// =========================================================
+
+#define @PROMETHEUS_CORE_COMPILER_NAME@
+
+#if defined(PROMETHEUS_CORE_COMPILER_MSVC)
+
+#define PROMETHEUS_COMPILER_MSVC
+
+#if __cpp_lib_unreachable >= 202202L
+#define PROMETHEUS_COMPILER_UNREACHABLE() std::unreachable()
+#else
+#define PROMETHEUS_COMPILER_UNREACHABLE() __assume(0)
+#endif
+
+#define PROMETHEUS_COMPILER_DEBUG_TRAP() __debugbreak()
+#define PROMETHEUS_COMPILER_IMPORTED_SYMBOL __declspec(dllimport)
+#define PROMETHEUS_COMPILER_EXPORTED_SYMBOL __declspec(dllexport)
+#define PROMETHEUS_COMPILER_LOCAL_SYMBOL
+
+#define PROMETHEUS_COMPILER_DISABLE_WARNING_PUSH __pragma(warning(push))
+#define PROMETHEUS_COMPILER_DISABLE_WARNING_POP __pragma(warning(pop))
+#define PROMETHEUS_COMPILER_DISABLE_WARNING(warningNumber) __pragma(warning(disable : warningNumber)) // NOLINT(bugprone-macro-parentheses)
+
+#elif defined(PROMETHEUS_CORE_COMPILER_GNU)
+
+#define PROMETHEUS_COMPILER_GNU
+
+#if __cpp_lib_unreachable >= 202202L
+#define PROMETHEUS_COMPILER_UNREACHABLE() std::unreachable()
+#else
+#define PROMETHEUS_COMPILER_UNREACHABLE() __builtin_unreachable()
+#endif
+
+#define PROMETHEUS_COMPILER_DEBUG_TRAP() __builtin_trap()
+#define PROMETHEUS_COMPILER_IMPORTED_SYMBOL __attribute__((visibility("default")))
+#define PROMETHEUS_COMPILER_EXPORTED_SYMBOL __attribute__((visibility("default")))
+#define PROMETHEUS_COMPILER_LOCAL_SYMBOL __attribute__((visibility("hidden")))
+
+#define PROMETHEUS_COMPILER_DISABLE_WARNING_PUSH _Pragma("GCC diagnostic push")
+#define PROMETHEUS_COMPILER_DISABLE_WARNING_POP _Pragma("GCC diagnostic pop")
+
+#define PROMETHEUS_COMPILER_PRIVATE_DO_PRAGMA(X) _Pragma(#X)
+#define PROMETHEUS_COMPILER_DISABLE_WARNING(warningName) PROMETHEUS_COMPILER_PRIVATE_DO_PRAGMA(GCC diagnostic ignored #warningName)
+
+#elif defined(PROMETHEUS_CORE_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_CORE_COMPILER_CLANG_CL) or defined(PROMETHEUS_CORE_COMPILER_CLANG)
+
+#if defined(PROMETHEUS_CORE_COMPILER_APPLE_CLANG)
+#define PROMETHEUS_COMPILER_APPLE_CLANG
+#elif defined(PROMETHEUS_CORE_COMPILER_CLANG_CL)
+#define PROMETHEUS_COMPILER_CLANG_CL
+#else
+#define PROMETHEUS_COMPILER_CLANG
+#endif
+
+#if __cpp_lib_unreachable >= 202202L
+#define PROMETHEUS_COMPILER_UNREACHABLE() std::unreachable()
+#else
+#define PROMETHEUS_COMPILER_UNREACHABLE() __builtin_unreachable()
+#endif
+
+#define PROMETHEUS_COMPILER_DEBUG_TRAP() __builtin_trap()
+#define PROMETHEUS_COMPILER_IMPORTED_SYMBOL __attribute__((visibility("default")))
+#define PROMETHEUS_COMPILER_EXPORTED_SYMBOL __attribute__((visibility("default")))
+#define PROMETHEUS_COMPILER_LOCAL_SYMBOL __attribute__((visibility("hidden")))
+
+#define PROMETHEUS_COMPILER_DISABLE_WARNING_PUSH _Pragma("clang diagnostic push")
+#define PROMETHEUS_COMPILER_DISABLE_WARNING_POP _Pragma("clang diagnostic pop")
+
+#define PROMETHEUS_COMPILER_PRIVATE_DO_PRAGMA(X) _Pragma(#X)
+#define PROMETHEUS_COMPILER_DISABLE_WARNING(warningName) PROMETHEUS_COMPILER_PRIVATE_DO_PRAGMA(clang diagnostic ignored #warningName)
+
+#else
+
+#define PROMETHEUS_COMPILER_UNREACHABLE() std::unreachable()
+#define PROMETHEUS_COMPILER_DEBUG_TRAP()
+#define PROMETHEUS_COMPILER_IMPORTED_SYMBOL
+#define PROMETHEUS_COMPILER_EXPORTED_SYMBOL
+#define PROMETHEUS_COMPILER_LOCAL_SYMBOL
+
+#define PROMETHEUS_COMPILER_DISABLE_WARNING_PUSH
+#define PROMETHEUS_COMPILER_DISABLE_WARNING_POP
+#define PROMETHEUS_COMPILER_DISABLE_WARNING(warningName)
+
+#endif
+
+#if defined(PROMETHEUS_COMPILER_MSVC)
+#define PROMETHEUS_COMPILER_DISABLE_MSVC_WARNING(warningNumber) PROMETHEUS_COMPILER_DISABLE_WARNING(warningNumber)
+#else
+#define PROMETHEUS_COMPILER_DISABLE_MSVC_WARNING(warningNumber)
+#endif
+
+#if defined(PROMETHEUS_COMPILER_GNU)
+#define PROMETHEUS_COMPILER_DISABLE_GNU_WARNING(warningName) PROMETHEUS_COMPILER_DISABLE_WARNING(warningName)
+#else
+#define PROMETHEUS_COMPILER_DISABLE_GNU_WARNING(warningName)
+#endif
+
+#if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
+#define PROMETHEUS_COMPILER_DISABLE_CLANG_WARNING(warningName) PROMETHEUS_COMPILER_DISABLE_WARNING(warningName)
+#else
+#define PROMETHEUS_COMPILER_DISABLE_CLANG_WARNING(warningName)
+#endif
+
+#if defined(PROMETHEUS_COMPILER_MSVC)
+#define PROMETHEUS_COMPILER_NO_UNIQUE_ADDRESS [[msvc::no_unique_address]]
+#elif defined(PROMETHEUS_COMPILER_CLANG_CL)
+#if __clang_major__ >= 18
+// https://github.com/llvm/llvm-project/pull/65675
+// https://github.com/llvm/llvm-project/pull/67199
+#define PROMETHEUS_COMPILER_NO_UNIQUE_ADDRESS [[msvc::no_unique_address]]
+#else
+#define PROMETHEUS_COMPILER_NO_UNIQUE_ADDRESS
+#endif
+#else
+#define PROMETHEUS_COMPILER_NO_UNIQUE_ADDRESS [[no_unique_address]]
+#endif
+
+#if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
+#define PROMETHEUS_COMPILER_NO_DESTROY [[clang::no_destroy]]
+#else
+#define PROMETHEUS_COMPILER_NO_DESTROY
+#endif
+
+#if defined(PROMETHEUS_COMPILER_MSVC)
+#define PROMETHEUS_COMPILER_EMPTY_BASE __declspec(empty_bases)
+#else
+#define PROMETHEUS_COMPILER_EMPTY_BASE
+#endif
+
+// =========================================================
+// BUILD TYPE
+// =========================================================
+
+// 
+#define PROMETHEUS_BUILD_TYPE "@CMAKE_BUILD_TYPE@"
+
+#if defined(NDEBUG) or defined(_NDEBUG)
+#define PROMETHEUS_COMPILER_DEBUG 0
+#else
+#define PROMETHEUS_COMPILER_DEBUG 1
+#endif
+
+// =========================================================
+// GIT INFO
+// =========================================================
+
+#define PROMETHEUS_CORE_GIT_BRANCH_NAME "@PROMETHEUS_CORE_GIT_BRANCH_NAME@"
+#define PROMETHEUS_CORE_GIT_COMMIT_HASH "@PROMETHEUS_CORE_GIT_COMMIT_HASH@"
+#define PROMETHEUS_CORE_GIT_COMMIT_DATE "@PROMETHEUS_CORE_GIT_COMMIT_DATE@"
+#define PROMETHEUS_CORE_GIT_DIRTY_FLAG "@PROMETHEUS_CORE_GIT_DIRTY_FLAG@"
+#define PROMETHEUS_CORE_GIT_DIRTY_STATUS "@PROMETHEUS_CORE_GIT_DIRTY_STATUS@"
+#define PROMETHEUS_CORE_GIT_TAG "@PROMETHEUS_CORE_GIT_TAG@"
+#define PROMETHEUS_CORE_GIT_COMMIT_INFO "@PROMETHEUS_CORE_GIT_COMMIT_INFO@"
+#define PROMETHEUS_CORE_GIT_COMMIT_INFO_SHORT "@PROMETHEUS_CORE_GIT_COMMIT_INFO_SHORT@"
+#define PROMETHEUS_CORE_GIT_COMMIT_INFO_FULL "@PROMETHEUS_CORE_GIT_COMMIT_INFO_FULL@"
