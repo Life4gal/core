@@ -9,12 +9,11 @@
 
 #include <prometheus/macro.hpp>
 
-#include <prometheus/platform/exception.hpp>
 #include <prometheus/platform/os.hpp>
 
 namespace
 {
-#if defined(PROMETHEUS_COMPILER_MSVC)
+#ifdef PROMETHEUS_COMPILER_MSVC
 	const int g_argc = *__p___argc();
 	const char* const* g_argv = *__p___argv();
 #else

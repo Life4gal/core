@@ -9,9 +9,9 @@
 #include <format>
 #include <type_traits>
 
-#include <meta/name.hpp>
-#include <meta/member.hpp>
-#include <meta/enumeration.hpp>
+#include <prometheus/meta/name.hpp>
+#include <prometheus/meta/member.hpp>
+#include <prometheus/meta/enumeration.hpp>
 
 namespace prometheus::meta
 {
@@ -28,8 +28,14 @@ namespace prometheus::meta
 		// formatter
 		if constexpr (std::formattable<type, char>)
 		{
-			if constexpr (ContainsTypeName) { std::format_to(std::back_inserter(out), "{}({})", meta::name_of<type>(), t); }
-			else { std::format_to(std::back_inserter(out), "{}", t); }
+			if constexpr (ContainsTypeName)
+			{
+				std::format_to(std::back_inserter(out), "{}({})", meta::name_of<type>(), t);
+			}
+			else
+			{
+				std::format_to(std::back_inserter(out), "{}", t);
+			}
 		}
 		// // appendable
 		// // note: prefer formattable than appendable
@@ -47,24 +53,51 @@ namespace prometheus::meta
 		// construct from T
 		else if constexpr (std::is_constructible_v<StringType, type>)
 		{
-			if constexpr (requires { out.append(StringType{t}); }) { out.append(StringType{t}); }
-			else if constexpr (requires { out.emplace_back(StringType{t}); }) { out.emplace_back(StringType{t}); }
-			else if constexpr (requires { out.push_back(StringType{t}); }) { out.push_back(StringType{t}); }
-			else if constexpr (requires { out += StringType{t}; }) { out += StringType{t}; }
-			else { PROMETHEUS_META_SEMANTIC_STATIC_UNREACHABLE("not appendable."); }
+			if constexpr (requires { out.append(StringType{t}); })
+			{
+				out.append(StringType{t});
+			}
+			else if constexpr (requires { out.emplace_back(StringType{t}); })
+			{
+				out.emplace_back(StringType{t});
+			}
+			else if constexpr (requires { out.push_back(StringType{t}); })
+			{
+				out.push_back(StringType{t});
+			}
+			else if constexpr (requires { out += StringType{t}; })
+			{
+				out += StringType{t};
+			}
+			else
+			{
+				PROMETHEUS_SEMANTIC_STATIC_UNREACHABLE("not appendable.");
+			}
 		}
 		// member function
 		else if constexpr (requires { t.to_string(out); })
 		{
-			if constexpr (ContainsTypeName) { std::format_to(std::back_inserter(out), "{}(", meta::name_of<type>()); }
+			if constexpr (ContainsTypeName)
+			{
+				std::format_to(std::back_inserter(out), "{}(", meta::name_of<type>());
+			}
 			t.to_string(out);
-			if constexpr (ContainsTypeName) { out.push_back(')'); }
+			if constexpr (ContainsTypeName)
+			{
+				out.push_back(')');
+			}
 		}
 		else if constexpr (requires { t.to_string(); })
 		{
-			if constexpr (ContainsTypeName) { std::format_to(std::back_inserter(out), "{}(", meta::name_of<type>()); }
+			if constexpr (ContainsTypeName)
+			{
+				std::format_to(std::back_inserter(out), "{}(", meta::name_of<type>());
+			}
 			meta::to_string<StringType, false>(t.to_string(), out);
-			if constexpr (ContainsTypeName) { out.push_back(')'); }
+			if constexpr (ContainsTypeName)
+			{
+				out.push_back(')');
+			}
 		}
 		// pointer
 		// note: std::nullptr_t satisfies std::formattable<type, char>
@@ -76,23 +109,38 @@ namespace prometheus::meta
 			// {
 			if (t == nullptr)
 			{
-				if constexpr (ContainsTypeName) { std::format_to(std::back_inserter(out), "{}(0x00000000)", meta::name_of<type>()); }
-				else { meta::to_string<StringType, false>(nullptr, out); }
+				if constexpr (ContainsTypeName)
+				{
+					std::format_to(std::back_inserter(out), "{}(0x00000000)", meta::name_of<type>());
+				}
+				else
+				{
+					meta::to_string<StringType, false>(nullptr, out);
+				}
 				return;
 			}
 
-			if constexpr (ContainsTypeName) { std::format_to(std::back_inserter(out), "{}(", meta::name_of<type>()); }
+			if constexpr (ContainsTypeName)
+			{
+				std::format_to(std::back_inserter(out), "{}(", meta::name_of<type>());
+			}
 			// address
 			std::format_to(std::back_inserter(out), "0x{:x} => ", reinterpret_cast<std::uintptr_t>(t));
 			// sub-element does not contain type name.
 			meta::to_string<StringType, false>(*t, out);
-			if constexpr (ContainsTypeName) { out.push_back(')'); }
+			if constexpr (ContainsTypeName)
+			{
+				out.push_back(')');
+			}
 			// }
 		}
 		// container
 		else if constexpr (std::ranges::range<type>)
 		{
-			if constexpr (ContainsTypeName) { std::format_to(std::back_inserter(out), "{}", meta::name_of<type>()); }
+			if constexpr (ContainsTypeName)
+			{
+				std::format_to(std::back_inserter(out), "{}", meta::name_of<type>());
+			}
 			out.push_back('[');
 
 			std::ranges::for_each(
@@ -109,10 +157,16 @@ namespace prometheus::meta
 		// meta::known_member_t
 		else if constexpr (meta::known_member_t<type>)
 		{
-			if constexpr (ContainsTypeName) { std::format_to(std::back_inserter(out), "{}", meta::name_of<type>()); }
+			if constexpr (ContainsTypeName)
+			{
+				std::format_to(std::back_inserter(out), "{}", meta::name_of<type>());
+			}
 			out.push_back('{');
 
-			if constexpr (meta::member_size<type>() == 0) { out.push_back(','); }
+			if constexpr (meta::member_size<type>() == 0)
+			{
+				out.push_back(',');
+			}
 			else
 			{
 				meta::member_walk(
@@ -129,12 +183,12 @@ namespace prometheus::meta
 			out.back() = '}';
 		}
 		// enum
-		else if constexpr (std::is_enum_v<type>) //
+		else if constexpr (std::is_enum_v<type>)
 		{
 			std::format_to(std::back_inserter(out), "{}", meta::name_of(t));
 		}
 		// any
-		else //
+		else
 		{
 			std::format_to(std::back_inserter(out), "{}(?)", meta::name_of<type>());
 		}

@@ -5,8 +5,6 @@
 
 #pragma once
 
-#include <cstdint>
-
 // for enumeration operations
 #include <prometheus/functional/enumeration.hpp>
 

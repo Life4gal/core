@@ -6,7 +6,6 @@
 #include <prometheus/platform/cpu.hpp>
 
 #include <atomic>
-#include <bit>
 #include <mutex>
 
 #include <prometheus/macro.hpp>
@@ -33,14 +32,15 @@
 
 #ifdef PROMETHEUS_PLATFORM_WINDOWS
 
+#error "todo"
 
 #elif defined(PROMETHEUS_PLATFORM_LINUX)
 
+#error "todo"
 
-#if defined(PROMETHEUS_PLATFORM_DARWIN)
+#elif defined(PROMETHEUS_PLATFORM_DARWIN)
 
-
-#endif
+#error "todo"
 
 #endif
 

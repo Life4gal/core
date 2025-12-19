@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <type_traits>
 #include <algorithm>
+#include <type_traits>
 #include <format>
 
 #include <prometheus/macro.hpp>

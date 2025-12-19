@@ -163,6 +163,13 @@ elseif (PROMETHEUS_CORE_COMPILER_GNU)
 		"-Wduplicated-cond"
 		"-Wduplicated-branches"
 	)
+
+	# ====================
+	# <stacktrace>
+	# https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/manual/manual/using.html#manual.intro.using.flags
+	list(APPEND PROMETHEUS_CORE_COMPILE_FLAGS "-lstdc++_libbacktrace")
+	# https://gcc.gnu.org/onlinedocs/libstdc++/manual/using.html#manual.intro.using.flags
+	list(APPEND PROMETHEUS_CORE_COMPILE_FLAGS "-lstdc++exp")
 elseif (PROMETHEUS_CORE_COMPILER_CLANG_APPLE)
 	set(
 		PROMETHEUS_CORE_COMPILE_FLAGS 
@@ -253,17 +260,6 @@ target_compile_options(
 #	${PROJECT_NAME}
 #	PUBLIC
 #	
-#	PROMETHEUS_CORE_MAJOR_VERSION=${PROMETHEUS_CORE_MAJOR_VERSION}
-#	PROMETHEUS_CORE_MINOR_VERSION=${PROMETHEUS_CORE_MINOR_VERSION}
-#	PROMETHEUS_CORE_PATCH_VERSION=${PROMETHEUS_CORE_PATCH_VERSION}
-#	PROMETHEUS_CORE_VERSION="${PROMETHEUS_CORE_VERSION}"
-#
-#	PROMETHEUS_CORE_PROJECT_NAME="${PROJECT_NAME}"
-#	PROMETHEUS_CORE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"
-#	PROMETHEUS_CORE_GIT_COMMIT_INFO="${PROMETHEUS_CORE_GIT_COMMIT_INFO}"
-#
-#	${PROMETHEUS_CORE_PLATFORM_NAME}
-#	${PROMETHEUS_CORE_COMPILER_NAME}
 #)
 
 target_compile_features(
@@ -398,9 +394,9 @@ target_sources(
 	FILE_SET public_header_files
 	TYPE HEADERS
 	BASE_DIRS 
-	"${CMAKE_CURRENT_SOURCE_DIR}/include"
+	${CMAKE_CURRENT_SOURCE_DIR}/include
 	# version header file
-	"${CMAKE_CURRENT_BINARY_DIR}/include"
+	${CMAKE_CURRENT_BINARY_DIR}/include
 	FILES
 	${PROMETHEUS_CORE_SOURCE_FILES_PUBLIC}
 	${PROMETHEUS_CORE_VERSION_HEADER_FILE}
@@ -410,6 +406,17 @@ target_sources(
 	${PROJECT_NAME}
 	PRIVATE
 	${PROMETHEUS_CORE_SOURCE_FILES_PRIVATE}
+)
+
+target_sources(
+		${PROJECT_NAME}
+		PUBLIC
+		FILE_SET macro_header_files
+		TYPE HEADERS
+		BASE_DIRS 
+		${CMAKE_CURRENT_SOURCE_DIR}/include
+		FILES
+		${CMAKE_CURRENT_SOURCE_DIR}/include/prometheus/macro.hpp
 )
 
 # ===================================================================================================
@@ -430,6 +437,7 @@ install(
 	TARGETS ${PROJECT_NAME}
 	EXPORT ${PROJECT_NAME}Targets
 	FILE_SET public_header_files DESTINATION include
+	FILE_SET macro_header_files DESTINATION include
 	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}

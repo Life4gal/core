@@ -5,6 +5,12 @@
 // std::unreachable()
 #include <utility>
 
+// As of C++20, the header <version> was added for this purpose
+// In old or nonconforming compilers, using the alternative operator representations may still require including this header :)
+#if __has_include(<ciso646>)
+#include <ciso646>
+#endif
+
 // =========================================================
 // VERSION
 // =========================================================

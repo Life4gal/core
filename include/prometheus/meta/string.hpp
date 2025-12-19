@@ -6,7 +6,6 @@
 #pragma once
 
 #include <algorithm>
-#include <ciso646>
 #include <functional>
 #include <ranges>
 #include <string>

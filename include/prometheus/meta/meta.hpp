@@ -5,9 +5,9 @@
 
 #pragma once
 
-#include <meta/name.hpp>
-#include <meta/string.hpp>
-#include <meta/enumeration.hpp>
-#include <meta/member.hpp>
-#include <meta/to_string.hpp>
-#include <meta/dimension.hpp>
+#include <prometheus/meta/name.hpp>
+#include <prometheus/meta/string.hpp>
+#include <prometheus/meta/enumeration.hpp>
+#include <prometheus/meta/member.hpp>
+#include <prometheus/meta/to_string.hpp>
+#include <prometheus/meta/dimension.hpp>

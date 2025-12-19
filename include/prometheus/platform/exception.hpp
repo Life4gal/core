@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include <ciso646>
 #include <source_location>
 #include <stacktrace>
 
