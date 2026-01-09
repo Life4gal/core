@@ -4,8 +4,8 @@ includedir=${prefix}/include
 libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
 
 Name: @PROJECT_NAME@
-Description: Prometheus Meta Library
-Version: @PROMETHEUS_META_VERSION@
-URL: https://github.com/Life4gal/meta
+Description: Prometheus Core Library
+Version: @PROMETHEUS_CORE_VERSION@
+URL: https://github.com/Life4gal/core
 Cflags: -I${includedir}
 Libs: -L${libdir} -l@PROJECT_NAME@
