@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <prometheus/version.hpp>
+#include <prometheus/version-core.hpp>
 
 // =========================================================
 // COMPILER

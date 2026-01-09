@@ -28,45 +28,21 @@
 // PLATFORM
 // =========================================================
 
-#define @PROMETHEUS_CORE_PLATFORM_NAME@
-
-#if defined(PROMETHEUS_CORE_PLATFORM_WINDOWS)
-#define PROMETHEUS_PLATFORM_WINDOWS
-#elif defined(PROMETHEUS_CORE_PLATFORM_LINUX)
-#define PROMETHEUS_PLATFORM_LINUX
-#elif defined(PROMETHEUS_CORE_PLATFORM_DARWIN)
-#define PROMETHEUS_PLATFORM_DARWIN
-#else
-#define PROMETHEUS_PLATFORM_UNKONWN
-#endif
+#define @PROMETHEUS_PLATFORM_NAME@
 
 // =========================================================
 // ARCHITECTURE
 // =========================================================
 
-#define @PROMETHEUS_CORE_ARCH_NAME@
-
-#if defined(PROMETHEUS_CORE_ARCH_X64)
-#define PROMETHEUS_ARCH_X64
-#elif defined(PROMETHEUS_CORE_ARCH_X86)
-#define PROMETHEUS_ARCH_X86
-#elif defined(PROMETHEUS_CORE_ARCH_ARM64)
-#define PROMETHEUS_ARCH_ARM64
-#elif defined(PROMETHEUS_CORE_ARCH_ARM)
-#define PROMETHEUS_ARCH_ARM
-#else
-#define PROMETHEUS_PLATFORM_UNKONWN
-#endif
+#define @PROMETHEUS_ARCH_NAME@
 
 // =========================================================
 // COMPILER
 // =========================================================
 
-#define @PROMETHEUS_CORE_COMPILER_NAME@
+#define @PROMETHEUS_COMPILER_NAME@
 
-#if defined(PROMETHEUS_CORE_COMPILER_MSVC)
-
-#define PROMETHEUS_COMPILER_MSVC
+#if defined(PROMETHEUS_COMPILER_MSVC)
 
 #if __cpp_lib_unreachable >= 202202L
 #define PROMETHEUS_COMPILER_UNREACHABLE() std::unreachable()
@@ -83,9 +59,7 @@
 #define PROMETHEUS_COMPILER_DISABLE_WARNING_POP __pragma(warning(pop))
 #define PROMETHEUS_COMPILER_DISABLE_WARNING(warningNumber) __pragma(warning(disable : warningNumber)) // NOLINT(bugprone-macro-parentheses)
 
-#elif defined(PROMETHEUS_CORE_COMPILER_GNU)
-
-#define PROMETHEUS_COMPILER_GNU
+#elif defined(PROMETHEUS_COMPILER_GNU)
 
 #if __cpp_lib_unreachable >= 202202L
 #define PROMETHEUS_COMPILER_UNREACHABLE() std::unreachable()
@@ -104,15 +78,7 @@
 #define PROMETHEUS_COMPILER_PRIVATE_DO_PRAGMA(X) _Pragma(#X)
 #define PROMETHEUS_COMPILER_DISABLE_WARNING(warningName) PROMETHEUS_COMPILER_PRIVATE_DO_PRAGMA(GCC diagnostic ignored #warningName)
 
-#elif defined(PROMETHEUS_CORE_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_CORE_COMPILER_CLANG_CL) or defined(PROMETHEUS_CORE_COMPILER_CLANG)
-
-#if defined(PROMETHEUS_CORE_COMPILER_APPLE_CLANG)
-#define PROMETHEUS_COMPILER_APPLE_CLANG
-#elif defined(PROMETHEUS_CORE_COMPILER_CLANG_CL)
-#define PROMETHEUS_COMPILER_CLANG_CL
-#else
-#define PROMETHEUS_COMPILER_CLANG
-#endif
+#elif defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
 
 #if __cpp_lib_unreachable >= 202202L
 #define PROMETHEUS_COMPILER_UNREACHABLE() std::unreachable()
