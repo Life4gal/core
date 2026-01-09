@@ -14,7 +14,7 @@ set(
 )
 set(
 	PROMETHEUS_CORE_PATCH_VERSION 
-	2
+	3
 	CACHE STRING 
 	"PROMETHEUS-CORE patch version"
 )
@@ -37,6 +37,7 @@ project(
 # OPTION
 
 option(PROMETHEUS_CORE_TEST "Generate the test target." ON)
+option(PROMETHEUS_CORE_INSTALL "Install targets and generate package config." ${PROJECT_IS_TOP_LEVEL})
 
 # ===================================================================================================
 # DEFINES
@@ -69,7 +70,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 #set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-add_library(${PROJECT_NAME} STATIC)
+add_library(${PROJECT_NAME})
 
 set_target_properties(
 	${PROJECT_NAME} PROPERTIES
@@ -82,7 +83,7 @@ target_include_directories(
 
 	PUBLIC 
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-	# version header file
+	# PROMETHEUS_CORE_VERSION_HEADER_FILE
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
 	$<INSTALL_INTERFACE:include>
 )
@@ -268,63 +269,65 @@ endif (PROMETHEUS_CORE_TEST)
 # ===================================================================================================
 # INSTALL
 
-include(GNUInstallDirs)
-include(CMakePackageConfigHelpers)
+if (PROMETHEUS_CORE_INSTALL)
+	include(GNUInstallDirs)
+	include(CMakePackageConfigHelpers)
 
-install(
-	TARGETS ${PROJECT_NAME}
-	EXPORT ${PROJECT_NAME}Targets
-	FILE_SET public_header_files DESTINATION include
-	FILE_SET macro_header_files DESTINATION include
-	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-	INCLUDES DESTINATION include
-)
+	install(
+		TARGETS ${PROJECT_NAME}
+		EXPORT ${PROJECT_NAME}Targets
+		FILE_SET public_header_files DESTINATION include
+		FILE_SET macro_header_files DESTINATION include
+		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+		INCLUDES DESTINATION include
+	)
 
-install(
-	EXPORT ${PROJECT_NAME}Targets
-	FILE ${PROJECT_NAME}Targets.cmake
-	NAMESPACE ${PROJECT_NAME}::
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
-)
+	install(
+		EXPORT ${PROJECT_NAME}Targets
+		FILE ${PROJECT_NAME}Targets.cmake
+		NAMESPACE ${PROJECT_NAME}::
+		DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+	)
 
-configure_package_config_file(
-	${CMAKE_CURRENT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
-	${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
-)
+	configure_package_config_file(
+		${CMAKE_CURRENT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
+		${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+		INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+	)
 
-write_basic_package_version_file(
-	${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-	VERSION ${PROMETHEUS_CORE_VERSION}
-	COMPATIBILITY SameMajorVersion
-)
+	write_basic_package_version_file(
+		${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+		VERSION ${PROMETHEUS_CORE_VERSION}
+		COMPATIBILITY SameMajorVersion
+	)
 
-install(
-	FILES
-	 ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-	 ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
-)
+	install(
+		FILES
+		 ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+		 ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+		DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+	)
 
-configure_file(
-	${CMAKE_CURRENT_SOURCE_DIR}/cmake/${PROJECT_NAME}.pc.in
-	${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc
-	@ONLY
-)
+	configure_file(
+		${CMAKE_CURRENT_SOURCE_DIR}/cmake/${PROJECT_NAME}.pc.in
+		${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc
+		@ONLY
+	)
 
-install(
-	FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
-)
+	install(
+		FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc
+		DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+	)
 
-set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
-set(CPACK_PACKAGE_VENDOR ${PROJECT_NAME})
-set(CPACK_PACKAGE_VERSION ${PROMETHEUS_CORE_VERSION})
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Prometheus Core Library")
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "")
-set(CPACK_RPM_PACKAGE_REQUIRES "")
+	set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
+	set(CPACK_PACKAGE_VENDOR ${PROJECT_NAME})
+	set(CPACK_PACKAGE_VERSION ${PROMETHEUS_CORE_VERSION})
+	set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Prometheus Core Library")
+	set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+	set(CPACK_DEBIAN_PACKAGE_DEPENDS "")
+	set(CPACK_RPM_PACKAGE_REQUIRES "")
 
-include(CPack)
+	include(CPack)
+endif (PROMETHEUS_CORE_INSTALL)
