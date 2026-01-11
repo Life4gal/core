@@ -35,10 +35,16 @@ namespace prometheus::platform
 		[[nodiscard]] constexpr virtual auto when() const noexcept -> const std::stacktrace& = 0;
 
 		/**
-        * @brief Prints exception details to stderr.
+        * @brief Prints exception details to stream.
         * Includes function name, file, line, reason, and stack trace.
         */
-		auto print() const noexcept -> void;
+		auto print(std::FILE* stream = stderr) const noexcept -> void;
+
+		/**
+        * @brief Prints exception details to os.
+        * Includes function name, file, line, reason, and stack trace.
+        */
+		auto print(std::ostream& os) const noexcept -> void;
 	};
 
 	/**
@@ -138,8 +144,7 @@ namespace prometheus::platform
 	 */
 	template<typename ExceptionType, typename StringType, typename DataType>
 		requires std::derived_from<ExceptionType, Exception<DataType>>
-	[[noreturn]] constexpr auto
-	panic(
+	[[noreturn]] constexpr auto panic(
 		StringType&& message,
 		DataType&& data,
 		const std::source_location& location = std::source_location::current(),
@@ -166,8 +171,7 @@ namespace prometheus::platform
 	 */
 	template<typename ExceptionType, typename StringType>
 		requires std::derived_from<ExceptionType, Exception<void>>
-	[[noreturn]] constexpr auto
-	panic(
+	[[noreturn]] constexpr auto panic(
 		StringType&& message,
 		const std::source_location& location = std::source_location::current(),
 		std::stacktrace stacktrace = std::stacktrace::current()
@@ -191,8 +195,7 @@ namespace prometheus::platform
 		{
 			template<typename ExceptionType, typename StringType>
 				requires(std::derived_from<ExceptionType, Exception<typename ExceptionType::data_type>> and std::is_same_v<typename ExceptionType::data_type, void>)
-			[[noreturn]] constexpr static auto
-			invoke(
+			[[noreturn]] constexpr static auto invoke(
 				StringType&& message,
 				const std::source_location& location = std::source_location::current(),
 				std::stacktrace stacktrace = std::stacktrace::current()
@@ -205,8 +208,7 @@ namespace prometheus::platform
 
 			template<typename ExceptionType, typename StringType>
 				requires(std::derived_from<ExceptionType, Exception<typename ExceptionType::data_type>> and not std::is_same_v<typename ExceptionType::data_type, void>)
-			[[noreturn]] constexpr static auto
-			invoke(
+			[[noreturn]] constexpr static auto invoke(
 				StringType&& message,
 				ExceptionType::data_type data,
 				const std::source_location& location = std::source_location::current(),
@@ -223,8 +225,7 @@ namespace prometheus::platform
 		{
 			template<typename ExceptionType, typename StringType>
 				requires(std::derived_from<ExceptionType, Exception<typename ExceptionType::data_type>> and std::is_same_v<typename ExceptionType::data_type, void>)
-			[[noreturn]] constexpr static auto
-			invoke(
+			[[noreturn]] constexpr static auto invoke(
 				StringType&& message,
 				const std::source_location& location = std::source_location::current(),
 				std::stacktrace stacktrace = std::stacktrace::current()
@@ -235,8 +236,7 @@ namespace prometheus::platform
 
 			template<typename ExceptionType, typename StringType>
 				requires(std::derived_from<ExceptionType, Exception<typename ExceptionType::data_type>> and not std::is_same_v<typename ExceptionType::data_type, void>)
-			[[noreturn]] constexpr static auto
-			invoke(
+			[[noreturn]] constexpr static auto invoke(
 				StringType&& message,
 				ExceptionType::data_type data,
 				const std::source_location& location = std::source_location::current(),
@@ -248,6 +248,8 @@ namespace prometheus::platform
 		};
 	}
 
+	// PROMETHEUS_PLATFORM_PANIC
+	// PROMETHEUS_PLATFORM_PANIC_DATA
 	template<typename ExceptionType>
 	using mob = exception_detail::panic_selector<
 		requires { ExceptionType::panic(std::declval<std::string>()); } or

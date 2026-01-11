@@ -5,24 +5,42 @@
 
 #include <prometheus/platform/exception.hpp>
 
+// std::println(FILE*)
 #include <print>
+// std::println(ostream&)
+#include <ostream>
 
 namespace prometheus::platform
 {
-	auto IException::print() const noexcept -> void
+	namespace
 	{
-		const auto& message = what();
-		const auto& location = where();
-		const auto& stacktrace = when();
+		template<typename Out>
+		auto do_print(Out& out, const IException& exception) noexcept -> void //
+			requires requires { std::println(out); }
+		{
+			const auto& message = exception.what();
+			const auto& location = exception.where();
+			const auto& stacktrace = exception.when();
 
-		std::println(
-			stderr,
-			"Error occurs while invoke function:\n{}\nat {}:{}\nReason:\n{}\nStack trace:\n{}",
-			location.function_name(),
-			location.file_name(),
-			location.line(),
-			message,
-			stacktrace
-		);
+			std::println(
+				out,
+				"Error occurs while invoke function:\n{}\nat {}:{}\nReason:\n{}\nStack trace:\n{}",
+				location.function_name(),
+				location.file_name(),
+				location.line(),
+				message,
+				stacktrace
+			);
+		}
+	}
+
+	auto IException::print(std::FILE* stream) const noexcept -> void
+	{
+		do_print(stream, *this);
+	}
+
+	auto IException::print(std::ostream& os) const noexcept -> void
+	{
+		do_print(os, *this);
 	}
 }
