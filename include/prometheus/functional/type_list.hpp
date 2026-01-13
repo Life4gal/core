@@ -8,7 +8,9 @@
 #include <type_traits>
 #include <tuple>
 
-#if defined(PROMETHEUS_META_COMPILER_CLANG_CL) or defined(PROMETHEUS_META_COMPILER_CLANG) or defined(PROMETHEUS_META_COMPILER_GNU)
+#include <prometheus/version-core.hpp>
+
+#if defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG) or defined(PROMETHEUS_COMPILER_GNU)
 #define TYPE_LIST_WORKAROUND_BINDER(T, Prediction) binder<T, Prediction>::template rebind
 #else
 #define TYPE_LIST_WORKAROUND_BINDER(T, Prediction) typename binder<T, Prediction>::rebind

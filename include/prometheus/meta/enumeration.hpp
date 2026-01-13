@@ -75,18 +75,18 @@ namespace prometheus::meta
 			constexpr auto full_function_name_suffix_size = full_function_name_size - full_function_name_prefix_size - dummy_struct_name_size;
 #endif
 
-#if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
-			PROMETHEUS_COMPILER_DISABLE_WARNING_PUSH
-			// clang-format off
-			PROMETHEUS_COMPILER_DISABLE_WARNING(-Wenum-constexpr-conversion)
-			// clang-format on
-#endif
+// #if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
+// 			PROMETHEUS_COMPILER_DISABLE_WARNING_PUSH
+// 			// clang-format off
+// 			PROMETHEUS_COMPILER_DISABLE_WARNING(-Wenum-constexpr-conversion)
+// 			// clang-format on
+// #endif
 
 			auto full_name = meta::get_full_function_name<EnumValue>();
 
-#if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
-			PROMETHEUS_COMPILER_DISABLE_WARNING_POP
-#endif
+// #if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
+// 			PROMETHEUS_COMPILER_DISABLE_WARNING_POP
+// #endif
 
 			full_name.remove_prefix(full_function_name_prefix_size);
 			full_name.remove_suffix(full_function_name_suffix_size);
@@ -323,12 +323,12 @@ namespace prometheus::meta
 				}
 			}
 
-#if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
-			PROMETHEUS_COMPILER_DISABLE_WARNING_PUSH
-			// clang-format off
-			PROMETHEUS_COMPILER_DISABLE_WARNING(-Wenum-constexpr-conversion)
-			// clang-format on
-#endif
+// #if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
+// 			PROMETHEUS_COMPILER_DISABLE_WARNING_PUSH
+// 			// clang-format off
+// 			PROMETHEUS_COMPILER_DISABLE_WARNING(-Wenum-constexpr-conversion)
+// 			// clang-format on
+// #endif
 
 			constexpr auto name = name_of<EnumValue>();
 
@@ -356,9 +356,9 @@ namespace prometheus::meta
 #error "fixme"
 #endif
 
-#if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
-			PROMETHEUS_COMPILER_DISABLE_WARNING_POP
-#endif
+// #if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
+// 			PROMETHEUS_COMPILER_DISABLE_WARNING_POP
+// #endif
 		}
 
 		// Check whether a value is a named enumeration value
@@ -366,18 +366,18 @@ namespace prometheus::meta
 			requires std::is_enum_v<EnumType>
 		[[nodiscard]] constexpr auto is_valid_enum() noexcept -> bool //
 		{
-#if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
-			PROMETHEUS_COMPILER_DISABLE_WARNING_PUSH
-			// clang-format off
-			PROMETHEUS_COMPILER_DISABLE_WARNING(-Wenum-constexpr-conversion)
-			// clang-format on
-#endif
+// #if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
+// 			PROMETHEUS_COMPILER_DISABLE_WARNING_PUSH
+// 			// clang-format off
+// 			PROMETHEUS_COMPILER_DISABLE_WARNING(-Wenum-constexpr-conversion)
+// 			// clang-format on
+// #endif
 
 			return is_valid_enum<static_cast<EnumType>(EnumValue)>();
 
-#if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
-			PROMETHEUS_COMPILER_DISABLE_WARNING_POP
-#endif
+// #if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
+// 			PROMETHEUS_COMPILER_DISABLE_WARNING_POP
+// #endif
 		}
 
 		template<typename EnumType>
