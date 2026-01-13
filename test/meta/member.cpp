@@ -1,7 +1,12 @@
 // meta::member
 #include <prometheus/meta/member.hpp>
 
-#include <string>
+#if defined(PROMETHEUS_COMPILER_MSVC) or defined(PROMETHEUS_COMPILER_CLANG_CL)
+//
+#else
+// ut
+#include <prometheus/ut/unit_test.hpp>
+#endif
 
 using namespace prometheus;
 
@@ -246,30 +251,30 @@ namespace
 	// error: accessing ‘std::__cxx11::basic_string<char>::<unnamed union>::_M_allocated_capacity’ member instead of initialized ‘std::__cxx11::basic_string<char>::<unnamed union>::_M_local_buf’ member in constant expression
 	// error: non-constant condition for static assertion
 
-	// [[maybe_unused]] GAL_PROMETHEUS_COMPILER_NO_DESTROY unit_test::suite<"meta.member.member_of_index"> member_of_index = []
-	// {
-	// 	using namespace unit_test;
-	//
-	// 	"MyTupleLike"_test = []
-	// 	{
-	// 		expect(test_clr<MyTupleLike, 0>() == "equal"_b) << fatal;
-	// 		expect(test_clr<MyTupleLike, 1>() != "not equal"_b) << fatal;
-	// 		expect(test_clr<MyTupleLike, 2>() == "equal"_b) << fatal;
-	// 		expect(test_rr<MyTupleLike, 0>() != "not equal"_b) << fatal;
-	// 		expect(test_rr<MyTupleLike, 1>() == "equal"_b) << fatal;
-	// 		expect(test_rr<MyTupleLike, 2>() == "equal"_b) << fatal;
-	// 	};
-	//
-	// 	"my_aggregate"_test = []
-	// 	{
-	// 		expect(test_clr<my_aggregate, 0>() == "equal"_b) << fatal;
-	// 		expect(test_clr<my_aggregate, 1>() != "not equal"_b) << fatal;
-	// 		expect(test_clr<my_aggregate, 2>() == "equal"_b) << fatal;
-	// 		expect(test_rr<my_aggregate, 0>() != "not equal"_b) << fatal;
-	// 		expect(test_rr<my_aggregate, 1>() == "equal"_b) << fatal;
-	// 		expect(test_rr<my_aggregate, 2>() == "equal"_b) << fatal;
-	// 	};
-	// };
+	[[maybe_unused]] PROMETHEUS_COMPILER_NO_DESTROY ut::suite<"meta.member.member_of_index"> member_of_index = [] noexcept -> void
+	{
+		using namespace ut;
+
+		"MyTupleLike"_test = [] noexcept -> void
+		{
+			expect(test_clr<MyTupleLike, 0>() == "equal"_b) << fatal;
+			expect(test_clr<MyTupleLike, 1>() != "not equal"_b) << fatal;
+			expect(test_clr<MyTupleLike, 2>() == "equal"_b) << fatal;
+			expect(test_rr<MyTupleLike, 0>() != "not equal"_b) << fatal;
+			expect(test_rr<MyTupleLike, 1>() == "equal"_b) << fatal;
+			expect(test_rr<MyTupleLike, 2>() == "equal"_b) << fatal;
+		};
+
+		"my_aggregate"_test = [] noexcept -> void
+		{
+			expect(test_clr<my_aggregate, 0>() == "equal"_b) << fatal;
+			expect(test_clr<my_aggregate, 1>() != "not equal"_b) << fatal;
+			expect(test_clr<my_aggregate, 2>() == "equal"_b) << fatal;
+			expect(test_rr<my_aggregate, 0>() != "not equal"_b) << fatal;
+			expect(test_rr<my_aggregate, 1>() == "equal"_b) << fatal;
+			expect(test_rr<my_aggregate, 2>() == "equal"_b) << fatal;
+		};
+	};
 
 #endif
 
@@ -367,20 +372,20 @@ namespace
 	// error: accessing ‘std::__cxx11::basic_string<char>::<unnamed union>::_M_allocated_capacity’ member instead of initialized ‘std::__cxx11::basic_string<char>::<unnamed union>::_M_local_buf’ member in constant expression
 	// error: non-constant condition for static assertion
 
-	// [[maybe_unused]] PROMETHEUS_COMPILER_NO_DESTROY unit_test::suite<"meta.member.member_walk"> member_walk = []
-	// {
-	// 	using namespace unit_test;
-	//
-	// 	"MyTupleLike"_test = []
-	// 	{
-	// 		expect(test_walk<MyTupleLike>() == "equal"_b) << fatal;
-	// 	};
-	//
-	// 	"my_aggregate"_test = []
-	// 	{
-	// 		expect(test_walk<my_aggregate>() == "equal"_b) << fatal;
-	// 	};
-	// };
+	[[maybe_unused]] PROMETHEUS_COMPILER_NO_DESTROY ut::suite<"meta.member.member_walk"> member_walk = [] noexcept -> void
+	{
+		using namespace ut;
+
+		"MyTupleLike"_test = []
+		{
+			expect(test_walk<MyTupleLike>() == "equal"_b) << fatal;
+		};
+
+		"my_aggregate"_test = []
+		{
+			expect(test_walk<my_aggregate>() == "equal"_b) << fatal;
+		};
+	};
 
 #endif
 
@@ -450,20 +455,20 @@ namespace
 	// error: accessing ‘std::__cxx11::basic_string<char>::<unnamed union>::_M_allocated_capacity’ member instead of initialized ‘std::__cxx11::basic_string<char>::<unnamed union>::_M_local_buf’ member in constant expression
 	// error: non-constant condition for static assertion
 
-	// [[maybe_unused]] PROMETHEUS_COMPILER_NO_DESTROY unit_test::suite<"meta.member.member_walk_until"> member_walk_until = []
-	// {
-	// 	using namespace unit_test;
-	//
-	// 	"MyTupleLike"_test = []
-	// 	{
-	// 		expect(test_walk_until<MyTupleLike>() == "equal"_b) << fatal;
-	// 	};
-	//
-	// 	"my_aggregate"_test = []
-	// 	{
-	// 		expect(test_walk_until<my_aggregate>() == "equal"_b) << fatal;
-	// 	};
-	// };
+	[[maybe_unused]] PROMETHEUS_COMPILER_NO_DESTROY ut::suite<"meta.member.member_walk_until"> member_walk_until = [] noexcept -> void
+	{
+		using namespace ut;
+
+		"MyTupleLike"_test = []
+		{
+			expect(test_walk_until<MyTupleLike>() == "equal"_b) << fatal;
+		};
+
+		"my_aggregate"_test = []
+		{
+			expect(test_walk_until<my_aggregate>() == "equal"_b) << fatal;
+		};
+	};
 
 #endif
 } // namespace
