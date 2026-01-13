@@ -21,3 +21,9 @@ target_link_libraries(
 	PRIVATE 
 	PrometheusCore
 )
+
+add_test(
+		NAME ${PROJECT_NAME}
+		COMMAND ${PROJECT_NAME}
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+)
