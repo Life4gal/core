@@ -13,6 +13,8 @@
 
 #include <prometheus/functional/aligned_union.hpp>
 
+#include <prometheus/platform/os.hpp>
+
 namespace prometheus::functional
 {
 	template<typename Signature>
@@ -124,7 +126,7 @@ namespace prometheus::functional
 				  invoker_{&do_invoke_function<typename compatible_function_pointer<FunctionPointer>::type>}
 			{
 				// throw exception?
-				PROMETHEUS_META_ERROR_DEBUG_ASSUME(function != nullptr, "function pointer must not be null");
+				PROMETHEUS_PLATFORM_ASSUME(function != nullptr, "function pointer must not be null");
 			}
 
 		public:
