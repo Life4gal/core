@@ -13,7 +13,7 @@
 
 namespace
 {
-#ifdef PROMETHEUS_COMPILER_MSVC
+#if defined(PROMETHEUS_COMPILER_MSVC) || defined(PROMETHEUS_COMPILER_CLANG_CL)
 	const int g_argc = *__p___argc();
 	const char* const* g_argv = *__p___argv();
 #else
