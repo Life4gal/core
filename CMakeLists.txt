@@ -8,13 +8,13 @@ set(
 )
 set(
 	PROMETHEUS_CORE_MINOR_VERSION 
-	0 
+	1 
 	CACHE STRING 
 	"PROMETHEUS-CORE minor version"
 )
 set(
 	PROMETHEUS_CORE_PATCH_VERSION 
-	4
+	0
 	CACHE STRING 
 	"PROMETHEUS-CORE patch version"
 )
@@ -47,7 +47,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/defines.cmake)
 # ===================================================================================================
 # DEPENDENCIES
 
-#include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/find_cpm.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/find_cpm.cmake)
 
 # packageProject
 #CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.13.0")
