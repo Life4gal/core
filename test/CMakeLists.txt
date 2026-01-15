@@ -1,6 +1,6 @@
 CPMAddPackage(
 		NAME PrometheusUT
-		GIT_TAG v1.1.0
+		GIT_TAG main
 		GITHUB_REPOSITORY "Life4gal/ut"
 		OPTIONS 
 		"PROMETHEUS_UT_TEST OFF"
@@ -9,7 +9,7 @@ CPMAddPackage(
 
 CPMAddPackage(
 		NAME PrometheusCLP
-		GIT_TAG v1.1.0
+		GIT_TAG main
 		GITHUB_REPOSITORY "Life4gal/clp"
 		OPTIONS 
 		"PROMETHEUS_CLP_TEST OFF"
