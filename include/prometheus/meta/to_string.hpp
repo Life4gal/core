@@ -172,7 +172,7 @@ namespace prometheus::meta
 				meta::member_walk(
 					[&out]<std::size_t Index, typename E>(const E& element) noexcept -> void
 					{
-						std::format_to(std::back_inserter(out), ".{} = ", meta::name_of_member<type, Index>());
+						std::format_to(std::back_inserter(out), ".{} = ", meta::name_of_member<Index, type>());
 						// sub-element does not contain type name.
 						meta::to_string<StringType, false>(element, out);
 						out.push_back(',');
