@@ -524,8 +524,9 @@ namespace prometheus::functional
 }
 
 // FIXME: UB
-template<typename EnumType>
-struct std::underlying_type<prometheus::functional::EnumWrapper<EnumType>> // NOLINT(cert-dcl58-cpp)
-{
-	using type = prometheus::functional::EnumWrapper<EnumType>::underlying_type;
-};
+// Specializing this standard library template is forbidden by N5014 [meta.rqmts]/4
+// template<typename EnumType>
+// struct std::underlying_type<prometheus::functional::EnumWrapper<EnumType>> // NOLINT(cert-dcl58-cpp)
+// {
+// 	using type = prometheus::functional::EnumWrapper<EnumType>::underlying_type;
+// };
