@@ -88,7 +88,16 @@ namespace
 
 		PROMETHEUS_MAGIC_ENUM_FLAG [[maybe_unused]] = 0b1111,
 	};
+}
 
+template<>
+struct meta::user_defined::enum_is_flag<FreeFlag0> : std::true_type {};
+
+template<>
+struct meta::user_defined::enum_is_flag<FreeFlag1> : std::true_type {};
+
+namespace
+{
 	// ==========================================================================
 	// min/max
 

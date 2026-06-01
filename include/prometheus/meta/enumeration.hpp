@@ -75,18 +75,18 @@ namespace prometheus::meta
 			constexpr auto full_function_name_suffix_size = full_function_name_size - full_function_name_prefix_size - dummy_struct_name_size;
 #endif
 
-// #if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
-// 			PROMETHEUS_COMPILER_DISABLE_WARNING_PUSH
+			// #if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
+			// 			PROMETHEUS_COMPILER_DISABLE_WARNING_PUSH
 // 			// clang-format off
 // 			PROMETHEUS_COMPILER_DISABLE_WARNING(-Wenum-constexpr-conversion)
-// 			// clang-format on
-// #endif
+			// 			// clang-format on
+			// #endif
 
 			auto full_name = meta::get_full_function_name<EnumValue>();
 
-// #if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
-// 			PROMETHEUS_COMPILER_DISABLE_WARNING_POP
-// #endif
+			// #if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
+			// 			PROMETHEUS_COMPILER_DISABLE_WARNING_POP
+			// #endif
 
 			full_name.remove_prefix(full_function_name_prefix_size);
 			full_name.remove_suffix(full_function_name_suffix_size);
@@ -101,11 +101,11 @@ namespace prometheus::meta
 
 			if constexpr (std::is_signed_v<value_type>)
 			{
-				return static_cast<value_type>(-128);
+				return std::numeric_limits<std::int8_t>::min();
 			}
 			else
 			{
-				return static_cast<value_type>(0);
+				return std::numeric_limits<std::uint8_t>::min();
 			}
 		}
 
@@ -117,11 +117,11 @@ namespace prometheus::meta
 
 			if constexpr (std::is_signed_v<value_type>)
 			{
-				return static_cast<value_type>(127);
+				return std::numeric_limits<std::int8_t>::max();
 			}
 			else
 			{
-				return static_cast<value_type>(255);
+				return std::numeric_limits<std::uint8_t>::max();
 			}
 		}
 
@@ -201,13 +201,15 @@ namespace prometheus::meta
 		};
 
 		/**
+		 * To declare an enum as a flag enum, specialize enum_is_flag<EnumType> and inherit from std::true_type.
+		 * Example:
+		 * @code 
 		 * template<>
-		 * struct enum_is_flag<MyEnum> : std::true_type
-		 * {
-		 * };
+		 * struct enum_is_flag<MyEnum> : std::true_type { };
+		 * @endcode 
 		 *
-		 * OR
-		 *
+		 * Alternatively, you can add a magic enumerator inside the enum definition:
+		 * @code
 		 * enum MyEnum
 		 * {
 		 *	E1 = 0,
@@ -221,6 +223,7 @@ namespace prometheus::meta
 		 *	// or
 		 *	PROMETHEUS_MAGIC_ENUM_FLAG
 		 * }
+		 * @endcode 
 		 */
 		template<typename>
 		struct enum_is_flag : std::false_type {};
@@ -228,16 +231,16 @@ namespace prometheus::meta
 		template<enumeration_detail::magic_enum_value_t EnumType>
 		struct enum_is_flag<EnumType> : std::true_type {};
 
-		/**
-		 * template<>
-		 * struct enum_name<MyEnum>
-		 * {
-		 *		constexpr static std::string_view value{"MY-ENUM"};
-		 * };
-		 */
-		template<typename EnumType>
-			requires std::is_enum_v<EnumType>
-		struct enum_name {};
+		// /**
+		//  * template<>
+		//  * struct enum_name<MyEnum>
+		//  * {
+		//  *		constexpr static std::string_view value{"MY-ENUM"};
+		//  * };
+		//  */
+		// template<typename EnumType>
+		// 	requires std::is_enum_v<EnumType>
+		// struct enum_name {};
 
 		/**
 		 * template<>
@@ -258,12 +261,24 @@ namespace prometheus::meta
 		{
 			if constexpr (Policy == EnumNamePolicy::FULL)
 			{
+				// std::define_static_string --> C++26
+				// if constexpr (requires { { user_defined::enum_name<EnumType>::value } -> std::convertible_to<std::string_view>; })
+				// {
+				// 	return ...;
+				// }
+
 				return name;
 			}
 			else if constexpr (Policy == EnumNamePolicy::WITH_SCOPED_NAME)
 			{
 				if constexpr (std::is_scoped_enum_v<EnumType>)
 				{
+					// std::define_static_string --> C++26
+					// if constexpr (requires { { user_defined::enum_name<EnumType>::value } -> std::convertible_to<std::string_view>; })
+					// {
+					// 	return ...;
+					// }
+
 					const auto last_double_colon = name.rfind("::");
 					const auto optional_extra_double_colon = name.rfind("::", last_double_colon - 1);
 
@@ -323,12 +338,12 @@ namespace prometheus::meta
 				}
 			}
 
-// #if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
-// 			PROMETHEUS_COMPILER_DISABLE_WARNING_PUSH
+			// #if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
+			// 			PROMETHEUS_COMPILER_DISABLE_WARNING_PUSH
 // 			// clang-format off
 // 			PROMETHEUS_COMPILER_DISABLE_WARNING(-Wenum-constexpr-conversion)
-// 			// clang-format on
-// #endif
+			// 			// clang-format on
+			// #endif
 
 			constexpr auto name = name_of<EnumValue>();
 
@@ -356,9 +371,9 @@ namespace prometheus::meta
 #error "fixme"
 #endif
 
-// #if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
-// 			PROMETHEUS_COMPILER_DISABLE_WARNING_POP
-// #endif
+			// #if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
+			// 			PROMETHEUS_COMPILER_DISABLE_WARNING_POP
+			// #endif
 		}
 
 		// Check whether a value is a named enumeration value
@@ -366,34 +381,34 @@ namespace prometheus::meta
 			requires std::is_enum_v<EnumType>
 		[[nodiscard]] constexpr auto is_valid_enum() noexcept -> bool //
 		{
-// #if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
-// 			PROMETHEUS_COMPILER_DISABLE_WARNING_PUSH
+			// #if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
+			// 			PROMETHEUS_COMPILER_DISABLE_WARNING_PUSH
 // 			// clang-format off
 // 			PROMETHEUS_COMPILER_DISABLE_WARNING(-Wenum-constexpr-conversion)
-// 			// clang-format on
-// #endif
+			// 			// clang-format on
+			// #endif
 
 			return is_valid_enum<static_cast<EnumType>(EnumValue)>();
 
-// #if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
-// 			PROMETHEUS_COMPILER_DISABLE_WARNING_POP
-// #endif
+			// #if defined(PROMETHEUS_COMPILER_APPLE_CLANG) or defined(PROMETHEUS_COMPILER_CLANG_CL) or defined(PROMETHEUS_COMPILER_CLANG)
+			// 			PROMETHEUS_COMPILER_DISABLE_WARNING_POP
+			// #endif
 		}
 
-		template<typename EnumType>
-			requires std::is_enum_v<EnumType>
-		[[nodiscard]] constexpr auto enum_name_with_user_defined() noexcept -> std::string_view
-		{
-			if constexpr (requires { { user_defined::enum_name<EnumType>::value } -> std::convertible_to<std::string_view>; })
-			{
-				return user_defined::enum_name<EnumType>::value;
-			}
-			else
-			{
-				// name::name_of
-				return name_of<EnumType>();
-			}
-		}
+		// template<typename EnumType>
+		// 	requires std::is_enum_v<EnumType>
+		// [[nodiscard]] constexpr auto enum_name_with_user_defined() noexcept -> std::string_view
+		// {
+		// 	if constexpr (requires { { user_defined::enum_name<EnumType>::value } -> std::convertible_to<std::string_view>; })
+		// 	{
+		// 		return user_defined::enum_name<EnumType>::value;
+		// 	}
+		// 	else
+		// 	{
+		// 		// name::name_of
+		// 		return name_of<EnumType>();
+		// 	}
+		// }
 
 		template<auto EnumValue>
 			requires std::is_enum_v<std::decay_t<decltype(EnumValue)>>
@@ -601,7 +616,7 @@ namespace prometheus::meta
 										cached_flag_value<EnumType, Behavior, Index>::value,
 										enumeration_detail::trim_full_name<EnumType, Policy>(
 											//
-											name_of<cached_flag_value<EnumType, Behavior, Index>::value>()
+											enum_value_name_with_user_defined<cached_flag_value<EnumType, Behavior, Index>::value>()
 										)
 								}...
 						};
@@ -623,21 +638,24 @@ namespace prometheus::meta
 			requires std::is_enum_v<EnumType>
 		[[nodiscard]] constexpr auto is_flag_with_user_defined() noexcept -> bool
 		{
-			if constexpr (user_defined::enum_is_flag<EnumType>::value)
-			{
-				// User explicitly marked this as a flags enum
-				return true;
-			}
-			else
-			{
-				constexpr auto single_bit_values_count = cached_flag_values_size<EnumType, FlagBehavior::SINGLE_BIT_ONLY>::value;
-				constexpr auto combination_values_count = cached_flag_values_size<EnumType, FlagBehavior::ALLOW_COMBINATION>::value;
+			// if constexpr (user_defined::enum_is_flag<EnumType>::value)
+			// {
+			// 	// User explicitly marked this as a flags enum
+			// 	return true;
+			// }
+			// else
+			// {
+			// 	constexpr auto single_bit_values_count = cached_flag_values_size<EnumType, FlagBehavior::SINGLE_BIT_ONLY>::value;
+			// 	constexpr auto combination_values_count = cached_flag_values_size<EnumType, FlagBehavior::ALLOW_COMBINATION>::value;
+			//
+			// 	// FIXME: 
+			// 	// The threshold that is too low may cause some enumeration values to be incorrectly identified as flag enumerations. 
+			// 	// The threshold that is too high may also cause enumeration types with only a few flag enumerations to not be identified as flag enumerations.
+			// 	return single_bit_values_count >= 4 or combination_values_count >= 6;
+			// }
 
-				// FIXME: 
-				// The threshold that is too low may cause some enumeration values to be incorrectly identified as flag enumerations. 
-				// The threshold that is too high may also cause enumeration types with only a few flag enumerations to not be identified as flag enumerations.
-				return single_bit_values_count >= 4 or combination_values_count >= 6;
-			}
+			// strictly user-controlled
+			return user_defined::enum_is_flag<EnumType>::value;
 		}
 
 		// ==============================================================
@@ -792,7 +810,7 @@ namespace prometheus::meta
 										cached_enum_value<EnumType, Index>::value,
 										enumeration_detail::trim_full_name<EnumType, Policy>(
 											//
-											name_of<cached_enum_value<EnumType, Index>::value>()
+											enum_value_name_with_user_defined<cached_enum_value<EnumType, Index>::value>()
 										)
 								}...
 						};
